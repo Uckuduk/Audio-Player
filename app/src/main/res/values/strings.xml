@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="bt_play">Play</string>
+    <string name="user_name">USER NAME</string>
+    <string name="password">PASSWORD</string>
+    <string name="sign_in">SIGN IN</string>
+</resources>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".MainActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_mySongs"
+            android:layout_width="match_parent"
+            android:layout_height="580dp">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+            android:id="@+id/l_song"
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="75dp"
+            android:clickable="false">
+
+
+        <Button
+                android:id="@+id/b_playButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:clickable="false"
+                android:text="@string/bt_play"/>
+
+        <TextView
+                android:id="@+id/tv_artistName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="20dp"
+                android:textSize="20sp"/>
+
+        <TextView
+                android:id="@+id/tv_songName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="20dp"
+                android:textSize="20sp"/>
+
+    </LinearLayout>
+
+
+        <Button
+                android:id="@+id/b_searchButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="20dp"
+                android:layout_marginStart="160dp"
+                android:text="Search"/>
+
+
+</FrameLayout>
