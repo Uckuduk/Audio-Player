@@ -29,7 +29,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     Thread thread =null;
 
     final int REQUEST_CODE_RV_CLICK = 3;
-    private Track songInfo = null;
+    private Data songInfo = null;
     private EditText searchField;
 
     private RecyclerView searchMusicList;
@@ -71,7 +71,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sa_b_search:
-                thread = new Thread(new LFMQuery());
+                thread = new Thread(new DeezerQuery());
                 thread.start();
                 break;
         }
@@ -79,7 +79,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    class LFMQuery implements Runnable {
+    class DeezerQuery implements Runnable {
 
 
         @Override
@@ -88,7 +88,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             searchPlayList = new PlayList();
 
             Gson gson = new Gson();
-            Track searchTrack;
+            Data searchTrack;
 
             String response = null;
 
@@ -101,8 +101,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             Response resp = gson.fromJson(response, Response.class);
 
-            for(int i = 0; i < resp.results.trackmatches.track.length; i++) {
-                searchTrack = resp.results.trackmatches.track[i];
+            for(int i = 0; i < resp.data.length; i++) {
+                searchTrack = resp.data[i];
                 searchPlayList.appendSong(searchTrack);
             }
 
@@ -122,7 +122,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    public void recyclerClick(View holder, Track track) {
+    public void recyclerClick(View holder, Data track) {
         thisSongLink = findViewById(R.id.l_searchSong);
         thisSongLink.setClickable(true);
 
@@ -147,8 +147,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         return;
                     } else {
                         lInfo.setVisibility(View.VISIBLE);
-                        songInfo = (Track) data.getSerializableExtra("Track");
-                        info.setText(songInfo.getName());
+                        songInfo = (Data) data.getSerializableExtra("Track");
+                        info.setText(songInfo.getTitle_short());
                         info = findViewById(R.id.tv_searchArtistName);
                         info.setText(songInfo.getArtist());
                     }

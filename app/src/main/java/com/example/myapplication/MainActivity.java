@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import entity.Data;
 import entity.PlayList;
 import entity.Track;
 
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void recyclerClick(View holder, Track track) {
+    public void recyclerClick(View holder, Data track) {
         LinearLayout thisSongLink = findViewById(R.id.l_song);
         thisSongLink.setClickable(true);
 
@@ -100,16 +101,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     } else {
                         lInfo.setVisibility(View.VISIBLE);
                         songInfo = (Track) data.getSerializableExtra("Track");
-                        info.setText(songInfo.getName());
+                        info.setText(songInfo.getTitle_short());
                         info = findViewById(R.id.tv_searchArtistName);
                         info.setText(songInfo.getArtist());
                     }
                     break;
 
                 case REQUEST_CODE_SEARCH:
-
-
-
                     if (data == null) {
                         return;
                     } else {
@@ -117,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         lInfo.setVisibility(View.VISIBLE);
                         info = findViewById(R.id.tv_songName);
                         songInfo = (Track) data.getSerializableExtra("Track");
-                        info.setText(songInfo.getName());
+                        info.setText(songInfo.getTitle_short());
                         info = findViewById(R.id.tv_artistName);
                         info.setText(songInfo.getArtist());
                     }

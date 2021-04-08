@@ -1,6 +1,9 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -9,7 +12,9 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.RecyclerView;
 import entity.Track;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 
 public class MusicActivity extends AppCompatActivity {
 
@@ -26,16 +31,31 @@ public class MusicActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if(intent.hasExtra("Track")){
+        if (intent.hasExtra("Track")) {
             track = (Track) intent.getSerializableExtra("Track");
+
             info = findViewById(R.id.tv_music_Name);
-            info.setText(track.getName());
+            info.setText(track.getTitle_short());
             info = findViewById(R.id.tv_music_Artist);
             info.setText(track.getArtist());
 
-        }
-        else {
-            track =null;
+            MediaPlayer play = new MediaPlayer();
+
+            Uri uri = Uri.parse(track.getPreview());
+
+            try {
+                play.setDataSource(getApplicationContext(),
+                        Uri.parse("https://cdns-preview-c.dzcdn.net//stream//c-cca63b2c92773d54e61c5b4d17695bd2-8.mp3"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            play.prepareAsync();
+
+            play.setVolume(1,1);
+            play.start();
+
+        } else {
+            track = null;
         }
     }
 

@@ -2,13 +2,14 @@ package entity;
 
 import java.io.Serializable;
 
-public class Track implements Serializable {
+public class Data implements Serializable{
+
     private String title_short;
     private String preview;
     private String name;
     public Artist artist;
 
-    public Track(String artist, String title_short, String preview){
+    public Data(String artist, String title_short, String preview){
         this.title_short = title_short;
         this.preview = preview;
         this.name = getArtist();

@@ -75,7 +75,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
         void bind(int listIndex){
 
-            songName.setText(musicList.get(listIndex).getName());
+            songName.setText(musicList.get(listIndex).getTitle_short());
             artistName.setText(musicList.get(listIndex).getArtist());
             index = listIndex;
         }

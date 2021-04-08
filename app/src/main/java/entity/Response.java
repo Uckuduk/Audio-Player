@@ -1,15 +1,15 @@
 package entity;
 
 public class Response {
-    public Result results;
+    public Data[] data;
 
-    public Result getResult() {
-        return results;
+    public Data getResult(int index) {
+        return data[index];
     }
 
-    public void setResult(Result result) {
-        this.results = result;
-    }
+    /*public void setResult(Data data) {
+        this.data = data;
+    }*/
 }
 
 

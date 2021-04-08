@@ -1,17 +1,17 @@
 package entity;
 
 public class PlayList {
-    private Track[] tracks;
+    private Data[] tracks;
 
-    public PlayList(){tracks = new Track[0];}
+    public PlayList(){tracks = new Data[0];}
 
-    public PlayList(Track[] tracks){
+    public PlayList(Data[] tracks){
         this.tracks = tracks;
     }
 
     public int count(){return tracks.length;}
 
-    public Track get(int index){
+    public Data get(int index){
         if(index < tracks.length && index >= 0) {
             return tracks[index];
         }
@@ -19,8 +19,8 @@ public class PlayList {
             return null;
     }
 
-    public void appendSong(Track track){
-        Track[] array = new Track[tracks.length + 1];
+    public void appendSong(Data track){
+        Data[] array = new Data[tracks.length + 1];
 
         for(int i = 0; i < tracks.length; i++){
             array[i] = tracks[i];

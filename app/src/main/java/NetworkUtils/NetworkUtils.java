@@ -11,35 +11,19 @@ import java.util.Scanner;
 
 public class NetworkUtils {
     private static final String AUTH = "http://www.last.fm/api/auth/?api_key";
-    private static final String LFM_BASE_URL = "https://ws.audioscrobbler.com/2.0/?";
-    private static final String LFM_GET = "method=track.search";
-    private static final String SONG_NAME = "track";
+    private static final String LFM_BASE_URL = "https://api.deezer.com/";
+    private static final String LFM_GET = "search";
+    private static final String SONG_NAME = "q";
     private static final String API_KEY = "api_key";
     private static final String FORMAT = "format";
 
-    public static URL authURL(){
-        Uri builtUri = Uri.parse(AUTH)
-                .buildUpon()
-                .appendQueryParameter(API_KEY, "75b1099b6c157b456a9ca15bbc59a743")
-                .build();
-
-        URL url = null;
-
-        try {
-            url = new URL(builtUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        return url;
-    }
 
     public static URL generateSearchURL(String songName) {
         Uri builtUri = Uri.parse(LFM_BASE_URL + LFM_GET)
                 .buildUpon()
                 .appendQueryParameter(SONG_NAME, songName)
-                .appendQueryParameter(API_KEY, "75b1099b6c157b456a9ca15bbc59a743")
-                .appendQueryParameter(FORMAT, "json")
+                /*.appendQueryParameter(API_KEY, "75b1099b6c157b456a9ca15bbc59a743")
+                .appendQueryParameter(FORMAT, "json")*/
                 .build();
 
         URL url = null;
