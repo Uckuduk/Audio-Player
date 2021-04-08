@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import entity.Data;
 import entity.PlayList;
-import entity.Track;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -22,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     final int REQUEST_CODE_RV_CLICK = 1;
     final int REQUEST_CODE_SEARCH = 2;
 
-    Track songInfo;
+    Data songInfo;
     Button search, play;
 
     class AUTH implements Runnable{
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         thisSongLink.setClickable(true);
 
         Intent activityIntent = new Intent(this, MusicActivity.class);
-        activityIntent.putExtra("Track", track);
+        activityIntent.putExtra("Data", track);
         startActivityForResult(activityIntent, REQUEST_CODE_RV_CLICK);
     }
 
@@ -100,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         return;
                     } else {
                         lInfo.setVisibility(View.VISIBLE);
-                        songInfo = (Track) data.getSerializableExtra("Track");
+                        songInfo = (Data) data.getSerializableExtra("Data");
                         info.setText(songInfo.getTitle_short());
                         info = findViewById(R.id.tv_searchArtistName);
                         info.setText(songInfo.getArtist());
@@ -114,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         lInfo.setVisibility(View.VISIBLE);
                         info = findViewById(R.id.tv_songName);
-                        songInfo = (Track) data.getSerializableExtra("Track");
+                        songInfo = (Data) data.getSerializableExtra("Data");
                         info.setText(songInfo.getTitle_short());
                         info = findViewById(R.id.tv_artistName);
                         info.setText(songInfo.getArtist());

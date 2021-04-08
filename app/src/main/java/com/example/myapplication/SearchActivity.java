@@ -12,16 +12,8 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import entity.*;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.io.Serializable;
-import java.net.URL;
-
 import static NetworkUtils.NetworkUtils.generateSearchURL;
 import static NetworkUtils.NetworkUtils.getResponseFromURL;
 
@@ -147,7 +139,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         return;
                     } else {
                         lInfo.setVisibility(View.VISIBLE);
-                        songInfo = (Data) data.getSerializableExtra("Track");
+                        songInfo = (Data) data.getSerializableExtra("Data");
                         info.setText(songInfo.getTitle_short());
                         info = findViewById(R.id.tv_searchArtistName);
                         info.setText(songInfo.getArtist());

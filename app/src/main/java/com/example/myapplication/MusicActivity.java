@@ -1,24 +1,18 @@
 package com.example.myapplication;
 
 import android.content.Intent;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import androidx.recyclerview.widget.RecyclerView;
-import entity.Track;
+import entity.Data;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.net.URI;
 
 public class MusicActivity extends AppCompatActivity {
 
-    private Track track;
+    private Data track;
 
 
     @Override
@@ -31,8 +25,8 @@ public class MusicActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if (intent.hasExtra("Track")) {
-            track = (Track) intent.getSerializableExtra("Track");
+        if (intent.hasExtra("Data")) {
+            track = (Data) intent.getSerializableExtra("Data");
 
             info = findViewById(R.id.tv_music_Name);
             info.setText(track.getTitle_short());
