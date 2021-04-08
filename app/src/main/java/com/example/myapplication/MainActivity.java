@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 case REQUEST_CODE_RV_CLICK:
 
-                    if (data == null) {
+                    if (data.getSerializableExtra("Data") == null || data==null) {
                         return;
                     } else {
                         lInfo.setVisibility(View.VISIBLE);
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
 
                 case REQUEST_CODE_SEARCH:
-                    if (data == null) {
+                    if (data.getSerializableExtra("Data") == null || data==null) {
                         return;
                     } else {
 

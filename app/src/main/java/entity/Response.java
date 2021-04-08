@@ -7,9 +7,6 @@ public class Response {
         return data[index];
     }
 
-    /*public void setResult(Data data) {
-        this.data = data;
-    }*/
 }
 
 

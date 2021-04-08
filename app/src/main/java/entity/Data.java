@@ -8,7 +8,7 @@ public class Data implements Serializable{
     private String preview;
     public Artist artist;
 
-    public Data(String artist, String title_short, String preview){
+    public Data(String title_short, String preview){
         this.title_short = title_short;
         this.preview = preview;
     };

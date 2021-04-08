@@ -51,7 +51,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         if(thread != null) {
             thread.interrupt();
             Intent intent = new Intent();
-            intent.putExtra("Track", songInfo);
+            intent.putExtra("Data", songInfo);
             setResult(RESULT_OK, intent);
             finish();
         }
@@ -115,11 +115,12 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void recyclerClick(View holder, Data track) {
+
         thisSongLink = findViewById(R.id.l_searchSong);
         thisSongLink.setClickable(true);
 
         Intent activityIntent = new Intent(this, MusicActivity.class);
-        activityIntent.putExtra("Track", track);
+        activityIntent.putExtra("Data", track);
         startActivityForResult(activityIntent, 3);
     }
 
@@ -134,8 +135,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             switch (requestCode) {
                 case REQUEST_CODE_RV_CLICK:
 
-
-                    if (data == null) {
+                    if (data.getSerializableExtra("Data") == null || data==null) {
                         return;
                     } else {
                         lInfo.setVisibility(View.VISIBLE);

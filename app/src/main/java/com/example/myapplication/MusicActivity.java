@@ -26,6 +26,7 @@ public class MusicActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         if (intent.hasExtra("Data")) {
+            
             track = (Data) intent.getSerializableExtra("Data");
 
             info = findViewById(R.id.tv_music_Name);
@@ -33,7 +34,7 @@ public class MusicActivity extends AppCompatActivity {
             info = findViewById(R.id.tv_music_Artist);
             info.setText(track.getArtist());
 
-            MediaPlayer play = new MediaPlayer();
+            /*MediaPlayer play = new MediaPlayer();
 
             Uri uri = Uri.parse(track.getPreview());
 
@@ -46,7 +47,7 @@ public class MusicActivity extends AppCompatActivity {
             play.prepareAsync();
 
             play.setVolume(1,1);
-            play.start();
+            play.start();*/
 
         } else {
             track = null;
@@ -56,7 +57,7 @@ public class MusicActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
-        intent.putExtra("Track", track);
+        intent.putExtra("Data", track);
         setResult(RESULT_OK, intent);
         finish();
         super.onBackPressed();
