@@ -1,6 +1,9 @@
 package com.example.myapplication;
 
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.widget.TextView;
@@ -18,6 +21,10 @@ public class MusicActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        if(Player.play.isPlaying()){
+            Player.play.stop();
+        }
 
         TextView info;
 
@@ -34,20 +41,7 @@ public class MusicActivity extends AppCompatActivity {
             info = findViewById(R.id.tv_music_Artist);
             info.setText(track.getArtist());
 
-            /*MediaPlayer play = new MediaPlayer();
-
-            Uri uri = Uri.parse(track.getPreview());
-
-            try {
-                play.setDataSource(getApplicationContext(),
-                        Uri.parse("https://cdns-preview-c.dzcdn.net//stream//c-cca63b2c92773d54e61c5b4d17695bd2-8.mp3"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            play.prepareAsync();
-
-            play.setVolume(1,1);
-            play.start();*/
+            Player.startStreaming(getApplicationContext(), track.getPreview());
 
         } else {
             track = null;
@@ -62,4 +56,6 @@ public class MusicActivity extends AppCompatActivity {
         finish();
         super.onBackPressed();
     }
+
+
 }
