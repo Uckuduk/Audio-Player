@@ -17,6 +17,7 @@ import entity.PlayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+
     public PlayList playList = new PlayList();
 
     final int REQUEST_CODE_RV_CLICK = 1;
@@ -38,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         RecyclerView musicList = findViewById(R.id.rv_mySongs);
+
+        Player.player = new MediaPlayer();
+        Player.createPlayer();
 
         search = findViewById(R.id.b_searchButton);
         play = findViewById(R.id.b_playButton);

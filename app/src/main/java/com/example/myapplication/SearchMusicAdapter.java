@@ -68,7 +68,6 @@ public class SearchMusicAdapter extends RecyclerView.Adapter<SearchMusicAdapter.
 
                 @Override
                 public void onClick(View view) {
-
                     ((SearchActivity) view.getContext()).recyclerClick(view, musicList.get(index));
                 }
             });

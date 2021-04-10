@@ -16,15 +16,11 @@ import java.io.IOException;
 public class MusicActivity extends AppCompatActivity {
 
     private Data track;
-
+    private MediaPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        if(Player.play.isPlaying()){
-            Player.play.stop();
-        }
 
         TextView info;
 
@@ -36,12 +32,19 @@ public class MusicActivity extends AppCompatActivity {
             
             track = (Data) intent.getSerializableExtra("Data");
 
+            if(Player.player.isPlaying()){
+                Player.player.stop();
+            }
+
             info = findViewById(R.id.tv_music_Name);
             info.setText(track.getTitle_short());
             info = findViewById(R.id.tv_music_Artist);
             info.setText(track.getArtist());
 
+            Player.player = new MediaPlayer();
+            Player.createPlayer();
             Player.startStreaming(getApplicationContext(), track.getPreview());
+            Player.player.start();
 
         } else {
             track = null;
