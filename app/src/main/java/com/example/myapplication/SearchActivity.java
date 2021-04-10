@@ -23,7 +23,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     final int REQUEST_CODE_RV_CLICK = 3;
     private Data songInfo = null;
     private EditText searchField;
-
+    private Button play, search;
     private RecyclerView searchMusicList;
     private PlayList searchPlayList;
     private SearchMusicAdapter searchMusicAdapter;
@@ -38,9 +38,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         searchMusicList = findViewById(R.id.rv_searchSongs);
         searchField = findViewById(R.id.et_searchLine);
 
-        Button search = findViewById(R.id.sa_b_search);
+        play = findViewById(R.id.sa_b_playButton);
+        search = findViewById(R.id.sa_b_search);
 
         search.setOnClickListener(this);
+        play.setOnClickListener(this);
 
 
     }
@@ -63,8 +65,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sa_b_search:
-                thread = new Thread(new DeezerQuery());
-                thread.start();
+
+                if(!searchField.getText().toString().equals("")){
+                    thread = new Thread(new DeezerQuery());
+                    thread.start();
+                }
+                break;
+
+            case R.id.sa_b_playButton:
+                if(Player.player.isPlaying())
+                    Player.player.pause();
+                else
+                    Player.player.start();
                 break;
         }
 
@@ -116,7 +128,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     public void recyclerClick(View holder, Data track) {
 
-        thisSongLink = findViewById(R.id.l_searchSong);
+        LinearLayout thisSongLink = findViewById(R.id.l_searchSong);
         thisSongLink.setClickable(true);
 
         Intent activityIntent = new Intent(this, MusicActivity.class);

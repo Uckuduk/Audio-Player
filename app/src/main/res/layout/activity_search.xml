@@ -10,7 +10,7 @@
             android:id="@+id/et_searchLine"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:hint="Search"/>
+            android:hint="@string/et_text"/>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_searchSongs"
@@ -31,7 +31,7 @@
             android:clickable="false">
 
         <Button
-                android:id="@+id/b_playButton"
+                android:id="@+id/sa_b_playButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -64,7 +64,7 @@
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="10dp"
 
-            android:text="Search"/>
+            android:text="@string/b_search_text"/>
 
 
 </FrameLayout>

@@ -38,10 +38,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        RecyclerView musicList = findViewById(R.id.rv_mySongs);
 
         Player.player = new MediaPlayer();
-        Player.createPlayer();
+
+        RecyclerView musicList = findViewById(R.id.rv_mySongs);
+
+
 
         search = findViewById(R.id.b_searchButton);
         play = findViewById(R.id.b_playButton);
@@ -67,6 +69,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.b_playButton:
+                if(Player.player.isPlaying())
+                    Player.player.pause();
+                else
+                    Player.player.start();
                 break;
 
             case R.id.b_searchButton:

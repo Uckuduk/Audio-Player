@@ -29,12 +29,12 @@ public class MusicActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         if (intent.hasExtra("Data")) {
-            
-            track = (Data) intent.getSerializableExtra("Data");
 
             if(Player.player.isPlaying()){
                 Player.player.stop();
             }
+
+            track = (Data) intent.getSerializableExtra("Data");
 
             info = findViewById(R.id.tv_music_Name);
             info.setText(track.getTitle_short());
