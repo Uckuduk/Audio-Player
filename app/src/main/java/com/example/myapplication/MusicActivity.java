@@ -1,17 +1,16 @@
 package com.example.myapplication;
 
-import android.content.Context;
 import android.content.Intent;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
+/*import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;*/
+import com.squareup.picasso.Picasso;
 import entity.Data;
-
-import java.io.IOException;
 
 public class MusicActivity extends AppCompatActivity {
 
@@ -23,6 +22,7 @@ public class MusicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         TextView info;
+        ImageView image;
 
         setContentView(R.layout.activity_music);
 
@@ -40,6 +40,14 @@ public class MusicActivity extends AppCompatActivity {
             info.setText(track.getTitle_short());
             info = findViewById(R.id.tv_music_Artist);
             info.setText(track.getArtist());
+
+            String str = track.getPicture();
+            Uri uri = Uri.parse(str);
+            image = findViewById(R.id.im_songImage);
+
+            Picasso.with(this)
+                    .load(uri)
+                    .into(image);
 
             Player.player = new MediaPlayer();
             Player.createPlayer();

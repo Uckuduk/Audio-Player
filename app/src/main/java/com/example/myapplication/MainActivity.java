@@ -26,14 +26,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Data songInfo;
     Button search, play;
 
-    class AUTH implements Runnable{
-
-        @Override
-        public void run() {
-
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
