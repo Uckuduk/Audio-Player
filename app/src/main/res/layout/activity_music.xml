@@ -27,9 +27,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_marginLeft="30dp"
-            android:layout_marginBottom="150dp"/>/>
+            android:layout_marginBottom="150dp"/>
 
-
-
-
+    <ImageButton
+            android:id="@+id/ma_b_play_pause"
+            android:layout_width="78dp"
+            android:layout_height="64dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="80dp"
+            android:contentDescription="Play/Pause"
+            android:src="@mipmap/ic_launcher_round"/>
 </FrameLayout>

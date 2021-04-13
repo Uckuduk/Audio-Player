@@ -40,7 +40,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         play = findViewById(R.id.sa_b_playButton);
         search = findViewById(R.id.sa_b_search);
+        thisSongLink = findViewById(R.id.l_searchSong);
 
+        thisSongLink.setOnClickListener(this);
         search.setOnClickListener(this);
         play.setOnClickListener(this);
 
@@ -77,6 +79,12 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     Player.player.pause();
                 else
                     Player.player.start();
+                break;
+
+            case R.id.l_searchSong:
+                Intent intent = new Intent(this, MusicActivity.class);
+                intent.putExtra("Track", ThisTrack.track);
+                startActivity(intent);
                 break;
         }
 
@@ -127,10 +135,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void recyclerClick(View holder, Data track) {
-
-        LinearLayout thisSongLink = findViewById(R.id.l_searchSong);
-        thisSongLink.setClickable(true);
-
         Intent activityIntent = new Intent(this, MusicActivity.class);
         activityIntent.putExtra("Data", track);
         startActivityForResult(activityIntent, 3);
@@ -143,6 +147,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         if (resultCode == RESULT_OK) {
             TextView info = findViewById(R.id.tv_searchSongName);
             LinearLayout lInfo = findViewById(R.id.l_searchSong);
+            Button button = findViewById(R.id.sa_b_playButton);
 
             switch (requestCode) {
                 case REQUEST_CODE_RV_CLICK:
@@ -151,6 +156,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         return;
                     } else {
                         lInfo.setVisibility(View.VISIBLE);
+                        button.setVisibility(View.VISIBLE);
                         songInfo = (Data) data.getSerializableExtra("Data");
                         info.setText(songInfo.getTitle_short());
                         info = findViewById(R.id.tv_searchArtistName);

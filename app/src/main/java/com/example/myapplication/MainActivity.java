@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import entity.Data;
 import entity.PlayList;
+import entity.ThisTrack;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Data songInfo;
     Button search, play;
+    LinearLayout thisSongLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +37,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         RecyclerView musicList = findViewById(R.id.rv_mySongs);
 
-
-
+        thisSongLink = findViewById(R.id.l_song);
         search = findViewById(R.id.b_searchButton);
         play = findViewById(R.id.b_playButton);
         play.setOnClickListener(this);
         search.setOnClickListener(this);
+        thisSongLink.setOnClickListener(this);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         musicList.setLayoutManager(layoutManager);
@@ -57,7 +59,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.l_song:
-
+                Intent intent = new Intent(this, MusicActivity.class);
+                intent.putExtra("Track", ThisTrack.track);
+                startActivity(intent);
                 break;
 
             case R.id.b_playButton:
@@ -81,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void recyclerClick(View holder, Data track) {
         LinearLayout thisSongLink = findViewById(R.id.l_song);
         thisSongLink.setClickable(true);
+        Button button = findViewById(R.id.b_playButton);
+        button.setClickable(true);
 
         Intent activityIntent = new Intent(this, MusicActivity.class);
         activityIntent.putExtra("Data", track);
@@ -94,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (resultCode == RESULT_OK) {
             TextView info = findViewById(R.id.tv_songName);
             LinearLayout lInfo = findViewById(R.id.l_song);
+            Button button = findViewById(R.id.b_playButton);
             switch(requestCode) {
 
                 case REQUEST_CODE_RV_CLICK:
@@ -101,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (data.getSerializableExtra("Data") == null || data==null) {
                         return;
                     } else {
+                        button.setVisibility(View.VISIBLE);
                         lInfo.setVisibility(View.VISIBLE);
                         songInfo = (Data) data.getSerializableExtra("Data");
                         info.setText(songInfo.getTitle_short());
@@ -113,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (data.getSerializableExtra("Data") == null || data==null) {
                         return;
                     } else {
-
+                        button.setVisibility(View.VISIBLE);
                         lInfo.setVisibility(View.VISIBLE);
                         info = findViewById(R.id.tv_songName);
                         songInfo = (Data) data.getSerializableExtra("Data");
