@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
+import NetworkUtils.NetworkUtils;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -11,31 +13,47 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import entity.Data;
-import entity.PlayList;
-import entity.ThisTrack;
+import com.google.gson.Gson;
+import entity.*;
+
+import java.io.*;
+import java.net.URL;
+import java.nio.Buffer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import static NetworkUtils.NetworkUtils.*;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
-
-    public PlayList playList = new PlayList();
-
+    final String PATH = "FavouriteTracksIDs.txt";
     final int REQUEST_CODE_RV_CLICK = 1;
     final int REQUEST_CODE_SEARCH = 2;
 
+    Thread thread = null;
     Data songInfo;
     Button search, play;
     LinearLayout thisSongLink;
+    RecyclerView musicList;
+    MusicAdapter musicAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        FavouriteTracks.favouriteIds = new ArrayList<>();
+        FavouriteTracks.tracks = new PlayList();
+
+        readFavouriteFile();
+
         Player.player = new MediaPlayer();
 
-        RecyclerView musicList = findViewById(R.id.rv_mySongs);
+        musicList = findViewById(R.id.rv_mySongs);
 
         thisSongLink = findViewById(R.id.l_song);
         search = findViewById(R.id.b_searchButton);
@@ -44,15 +62,74 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         search.setOnClickListener(this);
         thisSongLink.setOnClickListener(this);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        musicList.setLayoutManager(layoutManager);
+        thread = new Thread(new DeezerFavouriteQuery());
+        thread.start();
+    }
 
-        musicList.setHasFixedSize(true);
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-        MusicAdapter musicAdapter = new MusicAdapter(playList.count(), this, playList);
+    }
 
-        musicList.setAdapter(musicAdapter);
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    public void saveFavouriteFile() {
+
+        FileOutputStream out = null;
+
+        try {
+            out = openFileOutput(PATH, MODE_PRIVATE);
+            for (int id : FavouriteTracks.favouriteIds) {
+                String txt = String.valueOf(id);
+                out.write(txt.getBytes());
+                out.write("\n".getBytes());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void readFavouriteFile(){
+
+        FileInputStream in = null;
+
+        try {
+            in = openFileInput(PATH);
+
+            byte[] bytes = new byte[in.available()];
+            in.read(bytes);
+            String text = new String(bytes);
+            String[] IDs = text.split("\n");
+
+            for (String id: IDs) {
+                try {
+                    FavouriteTracks.favouriteIds.add(Integer.parseInt(id));
+
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        saveFavouriteFile();
     }
 
     @Override
@@ -112,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         lInfo.setVisibility(View.VISIBLE);
                         songInfo = (Data) data.getSerializableExtra("Data");
                         info.setText(songInfo.getTitle_short());
-                        info = findViewById(R.id.tv_searchArtistName);
+                        info = findViewById(R.id.tv_artistName);
                         info.setText(songInfo.getArtist());
                     }
                     break;
@@ -126,11 +203,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         info = findViewById(R.id.tv_songName);
                         songInfo = (Data) data.getSerializableExtra("Data");
                         info.setText(songInfo.getTitle_short());
-                        info = findViewById(R.id.tv_artistName);
-                        info.setText(songInfo.getArtist());
+                        info = findViewById(R.id.tv_artistName);info.setText(songInfo.getArtist());
                     }
+
                     break;
             }
+        }
+    }
+
+    class DeezerFavouriteQuery implements Runnable {
+
+        @Override
+        public void run() {
+
+            Gson gson = new Gson();
+            Data searchTrack;
+
+            ArrayList<URL> responses = null;
+
+            try {
+                responses = findTrackById(FavouriteTracks.favouriteIds);
+                for (URL url: responses) {
+                   String response = getResponseFromURL(url);
+                   searchTrack = gson.fromJson(response, Data.class);
+                   FavouriteTracks.tracks.appendSong(searchTrack);
+                   searchTrack.setFavourite(true);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            musicList.post(new Runnable() {
+                @Override
+                public void run() {
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(getParent());
+                    musicList.setLayoutManager(layoutManager);
+
+                    musicList.setHasFixedSize(true);
+                    musicAdapter = new MusicAdapter(FavouriteTracks.tracks.count(), getParent(), FavouriteTracks.tracks);
+                    musicList.setAdapter(musicAdapter);
+                }
+            });
         }
     }
 }

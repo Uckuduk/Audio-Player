@@ -5,13 +5,14 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
 import entity.Data;
+import entity.FavouriteTracks;
 import entity.ThisTrack;
 
 public class MusicActivity extends AppCompatActivity implements View.OnClickListener {
@@ -19,6 +20,8 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
     private Data track;
     private MediaPlayer player;
     private String lastSong = null;
+    private ImageButton playButton, favouriteButton;
+    private Boolean favourite = null;
 
 
     @Override
@@ -27,16 +30,15 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_music);
 
 
-
-
-        ImageButton imageButton = (ImageButton) findViewById(R.id.ma_b_play_pause);
-        imageButton.setOnClickListener(this);
+        playButton = findViewById(R.id.ma_b_play_pause);
+        favouriteButton = findViewById(R.id.ma_b_favourite);
+        playButton.setOnClickListener(this);
+        favouriteButton.setOnClickListener(this);
 
         Intent intent = getIntent();
 
         if(intent.hasExtra("Track")){
             track = (Data) intent.getSerializableExtra("Track");
-
             setInfo();
         }
 
@@ -86,6 +88,7 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
 
         Intent intent = new Intent();
         intent.putExtra("Data", track);
+
         setResult(RESULT_OK, intent);
         finish();
         super.onBackPressed();
@@ -100,6 +103,17 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
                 else
                     Player.player.start();
                 break;
+            case R.id.ma_b_favourite:
+                if(!track.isFavourite()){
+                    track.setFavourite(true);
+                    FavouriteTracks.addFavourite(track);
+
+                }
+                else {
+                    track.setFavourite(false);
+                    FavouriteTracks.deleteFavourite(track);
+                }
+
             default:
                 break;
         }

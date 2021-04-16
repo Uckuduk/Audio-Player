@@ -14,20 +14,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import entity.*;
 import java.io.IOException;
+import java.io.Serializable;
+
 import static NetworkUtils.NetworkUtils.generateSearchURL;
 import static NetworkUtils.NetworkUtils.getResponseFromURL;
 
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
     Thread thread =null;
-
     final int REQUEST_CODE_RV_CLICK = 3;
     private Data songInfo = null;
     private EditText searchField;
-    private Button play, search;
     private RecyclerView searchMusicList;
     private PlayList searchPlayList;
     private SearchMusicAdapter searchMusicAdapter;
-    private LinearLayout thisSongLink;
 
 
     @Override
@@ -38,16 +37,16 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         searchMusicList = findViewById(R.id.rv_searchSongs);
         searchField = findViewById(R.id.et_searchLine);
 
-        play = findViewById(R.id.sa_b_playButton);
-        search = findViewById(R.id.sa_b_search);
-        thisSongLink = findViewById(R.id.l_searchSong);
+        Button play = findViewById(R.id.sa_b_playButton);
+        Button search = findViewById(R.id.sa_b_search);
+        LinearLayout thisSongLink = findViewById(R.id.l_searchSong);
 
         thisSongLink.setOnClickListener(this);
         search.setOnClickListener(this);
         play.setOnClickListener(this);
-
-
     }
+
+
 
     @Override
     public void onBackPressed() {
@@ -56,6 +55,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             thread.interrupt();
             Intent intent = new Intent();
             intent.putExtra("Data", songInfo);
+
             setResult(RESULT_OK, intent);
             finish();
         }
@@ -69,7 +69,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.sa_b_search:
 
                 if(!searchField.getText().toString().equals("")){
-                    thread = new Thread(new DeezerQuery());
+                    thread = new Thread(new DeezerSearchQuery());
                     thread.start();
                 }
                 break;
@@ -91,7 +91,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    class DeezerQuery implements Runnable {
+    class DeezerSearchQuery implements Runnable {
 
 
         @Override
@@ -152,9 +152,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             switch (requestCode) {
                 case REQUEST_CODE_RV_CLICK:
 
+
                     if (data.getSerializableExtra("Data") == null || data==null) {
                         return;
                     } else {
+
                         lInfo.setVisibility(View.VISIBLE);
                         button.setVisibility(View.VISIBLE);
                         songInfo = (Data) data.getSerializableExtra("Data");

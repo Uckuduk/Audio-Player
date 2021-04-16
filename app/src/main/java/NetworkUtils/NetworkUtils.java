@@ -7,23 +7,38 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class NetworkUtils {
-    private static final String AUTH = "http://www.last.fm/api/auth/?api_key";
-    private static final String LFM_BASE_URL = "https://api.deezer.com/";
-    private static final String LFM_GET = "search";
-    private static final String SONG_NAME = "q";
-    private static final String API_KEY = "api_key";
-    private static final String FORMAT = "format";
 
+    private static final String Deezer_BASE_URL = "https://api.deezer.com/";
+    private static final String Deezer_GET = "search";
+    private static final String Deezer_GET_BY_ID = "track";
+    private static final String SONG_NAME = "q";
+
+    public static ArrayList<URL> findTrackById(ArrayList<Integer> IDs){
+        ArrayList<URL> URLs = new ArrayList<URL>();
+
+        for (int id: IDs) {
+            Uri builtUri = Uri.parse(Deezer_BASE_URL + Deezer_GET_BY_ID + '/' + String.valueOf(id));
+            URL url = null;
+
+            try {
+                url = new URL(builtUri.toString());
+                URLs.add(url);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return URLs;
+    }
 
     public static URL generateSearchURL(String songName) {
-        Uri builtUri = Uri.parse(LFM_BASE_URL + LFM_GET)
+        Uri builtUri = Uri.parse(Deezer_BASE_URL + Deezer_GET)
                 .buildUpon()
                 .appendQueryParameter(SONG_NAME, songName)
-                /*.appendQueryParameter(API_KEY, "75b1099b6c157b456a9ca15bbc59a743")
-                .appendQueryParameter(FORMAT, "json")*/
                 .build();
 
         URL url = null;
