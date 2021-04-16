@@ -32,10 +32,14 @@ public class PlayList {
                 if (tracks[i].getId() != track.getId()) {
                     array[i] = tracks[i];
                 }
+                else{
+                    deleted = true;
+                }
+
             }
-            else
-                deleted = true;
-                array[i] = tracks[i+1];
+            if(deleted){
+                array[i] = tracks[i + 1];
+            }
 
         }
 
@@ -52,5 +56,16 @@ public class PlayList {
         array[array.length - 1] = track;
 
         tracks = array;
+    }
+
+    public boolean contains(Data track){
+        boolean contain = false;
+        for (Data tr: tracks) {
+            if(tr.getId() == track.getId()){
+                contain = true;
+                break;
+            }
+        }
+        return contain;
     }
 }

@@ -1,9 +1,7 @@
 package com.example.myapplication;
 
-import NetworkUtils.NetworkUtils;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -18,19 +16,13 @@ import entity.*;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.Buffer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import static NetworkUtils.NetworkUtils.*;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    final String PATH = "FavouriteTracksIDs.txt";
+    final String PATH = "FavouriteTracksID.txt";
     final int REQUEST_CODE_RV_CLICK = 1;
     final int REQUEST_CODE_SEARCH = 2;
 
@@ -62,13 +54,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         search.setOnClickListener(this);
         thisSongLink.setOnClickListener(this);
 
-        thread = new Thread(new DeezerFavouriteQuery());
-        thread.start();
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
 
     }
 
@@ -80,6 +72,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
+        musicList.getRecycledViewPool().clear();
+
+        thread = new Thread(new DeezerFavouriteQuery());
+        thread.start();
     }
 
     public void saveFavouriteFile() {
@@ -129,6 +125,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        saveFavouriteFile();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         saveFavouriteFile();
     }
 
@@ -226,8 +228,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 for (URL url: responses) {
                    String response = getResponseFromURL(url);
                    searchTrack = gson.fromJson(response, Data.class);
-                   FavouriteTracks.tracks.appendSong(searchTrack);
-                   searchTrack.setFavourite(true);
+                   if(!FavouriteTracks.tracks.contains(searchTrack)) {
+                       FavouriteTracks.tracks.appendSong(searchTrack);
+                       searchTrack.setFavourite(true);
+                   }
+
                 }
 
             } catch (IOException e) {

@@ -40,9 +40,8 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
         if(intent.hasExtra("Track")){
             track = (Data) intent.getSerializableExtra("Track");
             setInfo();
-        }
-
-        if (intent.hasExtra("Data")) {
+        }else
+            if (intent.hasExtra("Data")) {
 
             if(Player.player.isPlaying()){
                 Player.player.stop();
@@ -110,8 +109,10 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
 
                 }
                 else {
-                    track.setFavourite(false);
-                    FavouriteTracks.deleteFavourite(track);
+                    if(FavouriteTracks.favouriteIds.contains(track.getId())){
+                        track.setFavourite(false);
+                        FavouriteTracks.deleteFavourite(track);
+                    }
                 }
 
             default:
