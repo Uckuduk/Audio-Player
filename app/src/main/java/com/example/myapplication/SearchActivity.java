@@ -46,8 +46,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         play.setOnClickListener(this);
     }
 
-
-
     @Override
     public void onBackPressed() {
 
@@ -134,7 +132,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    public void recyclerClick(View holder, Data track) {
+    public void recyclerClick(int index, Data track) {
+        NowPlayingList.playList = searchPlayList;
+        NowPlayingList.index = index;
         Intent activityIntent = new Intent(this, MusicActivity.class);
         activityIntent.putExtra("Data", track);
         startActivityForResult(activityIntent, 3);

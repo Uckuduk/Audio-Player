@@ -68,4 +68,13 @@ public class PlayList {
         }
         return contain;
     }
+
+    public PlayList reverse(){
+        Data[] array = new Data[tracks.length];
+        for(int i = 0; i < tracks.length; i++){
+            array[i] = tracks[tracks.length - 1 - i];
+        }
+
+        return new PlayList(array);
+    }
 }

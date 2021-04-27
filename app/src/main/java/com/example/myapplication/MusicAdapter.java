@@ -68,7 +68,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
                 @Override
                 public void onClick(View view) {
-                    ((MainActivity) view.getContext()).recyclerClick(view, musicList.get(index));
+                    ((MainActivity) view.getContext()).recyclerClick(index, musicList.get(index));
                 }
             });
         }

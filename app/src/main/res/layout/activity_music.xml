@@ -30,6 +30,16 @@
             android:layout_marginBottom="150dp"/>
 
     <ImageButton
+            android:id="@+id/ma_b_previous"
+            android:layout_width="78dp"
+            android:layout_height="64dp"
+            android:layout_gravity="bottom|left"
+            android:layout_marginBottom="80dp"
+            android:layout_marginLeft="50dp"
+            android:contentDescription="Play/Pause"
+            android:src="@mipmap/ic_launcher_round"/>
+
+    <ImageButton
             android:id="@+id/ma_b_play_pause"
             android:layout_width="78dp"
             android:layout_height="64dp"
@@ -43,7 +53,17 @@
             android:layout_width="78dp"
             android:layout_height="64dp"
             android:layout_gravity="bottom|right"
+            android:layout_marginBottom="150dp"
+            android:contentDescription="Play/Pause"
+            android:src="@mipmap/ic_launcher_round"/>
+
+    <ImageButton
+            android:id="@+id/ma_b_next"
+            android:layout_width="78dp"
+            android:layout_height="64dp"
+            android:layout_gravity="bottom|right"
             android:layout_marginBottom="80dp"
+            android:layout_marginRight="50dp"
             android:contentDescription="Play/Pause"
             android:src="@mipmap/ic_launcher_round"/>
 </FrameLayout>

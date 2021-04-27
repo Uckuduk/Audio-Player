@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -60,12 +61,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStart() {
         super.onStart();
-
-
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
     }
 
@@ -77,24 +76,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         thread = new Thread(new DeezerFavouriteQuery());
         thread.start();
     }
-
-    public void saveFavouriteFile() {
-
-        FileOutputStream out = null;
-
-        try {
-            out = openFileOutput(PATH, MODE_PRIVATE);
-            for (int id : FavouriteTracks.favouriteIds) {
-                String txt = String.valueOf(id);
-                out.write(txt.getBytes());
-                out.write("\n".getBytes());
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     public void readFavouriteFile(){
 
@@ -124,14 +105,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        saveFavouriteFile();
+        moveTaskToBack(true);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        saveFavouriteFile();
     }
 
     @Override
@@ -161,12 +140,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void recyclerClick(View holder, Data track) {
+    public void recyclerClick(int index, Data track) {
         LinearLayout thisSongLink = findViewById(R.id.l_song);
         thisSongLink.setClickable(true);
         Button button = findViewById(R.id.b_playButton);
         button.setClickable(true);
 
+        NowPlayingList.playList = FavouriteTracks.tracks.reverse();
+        NowPlayingList.index = index;
         Intent activityIntent = new Intent(this, MusicActivity.class);
         activityIntent.putExtra("Data", track);
         startActivityForResult(activityIntent, REQUEST_CODE_RV_CLICK);
@@ -246,7 +227,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     musicList.setLayoutManager(layoutManager);
 
                     musicList.setHasFixedSize(true);
-                    musicAdapter = new MusicAdapter(FavouriteTracks.tracks.count(), getParent(), FavouriteTracks.tracks);
+                    PlayList playList = FavouriteTracks.tracks.reverse();
+                    musicAdapter = new MusicAdapter(FavouriteTracks.tracks.count(), getParent(), playList);
                     musicList.setAdapter(musicAdapter);
                 }
             });
