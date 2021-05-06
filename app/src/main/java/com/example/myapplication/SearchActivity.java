@@ -2,10 +2,7 @@ package com.example.myapplication;
 
 import android.content.Intent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,20 +10,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import entity.*;
+
 import java.io.IOException;
-import java.io.Serializable;
+
 
 import static NetworkUtils.NetworkUtils.generateSearchURL;
 import static NetworkUtils.NetworkUtils.getResponseFromURL;
 
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
-    Thread thread =null;
-    final int REQUEST_CODE_RV_CLICK = 3;
+    Thread thread = null;
     private Data songInfo = null;
     private EditText searchField;
     private RecyclerView searchMusicList;
     private PlayList searchPlayList;
     private SearchMusicAdapter searchMusicAdapter;
+    private ImageButton playButton, searchButton;
+    private LinearLayout thisSongLink;
 
 
     @Override
@@ -37,28 +36,36 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         searchMusicList = findViewById(R.id.rv_searchSongs);
         searchField = findViewById(R.id.et_searchLine);
 
-        Button play = findViewById(R.id.sa_b_playButton);
-        Button search = findViewById(R.id.sa_b_search);
-        LinearLayout thisSongLink = findViewById(R.id.l_searchSong);
+        playButton = findViewById(R.id.sa_b_playButton);
+        searchButton = findViewById(R.id.sa_b_search);
+        thisSongLink = findViewById(R.id.l_searchSong);
 
         thisSongLink.setOnClickListener(this);
-        search.setOnClickListener(this);
-        play.setOnClickListener(this);
+        searchField.setOnClickListener(this);
+        searchButton.setOnClickListener(this);
+        playButton.setOnClickListener(this);
     }
 
     @Override
     public void onBackPressed() {
+        if(songInfo != null && !playButton.isShown()){
+            playButton.setVisibility(View.VISIBLE);
+            thisSongLink.setVisibility(View.VISIBLE);
 
-        if(thread != null) {
-            thread.interrupt();
-            Intent intent = new Intent();
-            intent.putExtra("Data", songInfo);
+        }else {
 
-            setResult(RESULT_OK, intent);
-            finish();
+            if (thread != null) {
+                thread.interrupt();
+                Intent intent = new Intent();
+                intent.putExtra("Data", songInfo);
+
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+
+
+            super.onBackPressed();
         }
-
-        super.onBackPressed();
     }
 
     @Override
@@ -66,17 +73,20 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         switch (v.getId()) {
             case R.id.sa_b_search:
 
-                if(!searchField.getText().toString().equals("")){
+                if (!searchField.getText().toString().equals("")) {
                     thread = new Thread(new DeezerSearchQuery());
                     thread.start();
                 }
                 break;
 
             case R.id.sa_b_playButton:
-                if(Player.player.isPlaying())
+                if (Player.player.isPlaying()) {
                     Player.player.pause();
-                else
+                    playButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                } else {
                     Player.player.start();
+                    playButton.setImageResource(R.drawable.ic_baseline_pause_24);
+                }
                 break;
 
             case R.id.l_searchSong:
@@ -84,13 +94,16 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 intent.putExtra("Track", ThisTrack.track);
                 startActivity(intent);
                 break;
+
+            case R.id.et_searchLine:
+                thisSongLink.setVisibility(View.INVISIBLE);
+                playButton.setVisibility(View.INVISIBLE);
         }
 
 
     }
 
     class DeezerSearchQuery implements Runnable {
-
 
         @Override
         public void run() {
@@ -111,7 +124,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             Response resp = gson.fromJson(response, Response.class);
 
-            for(int i = 0; i < resp.data.length; i++) {
+            for (int i = 0; i < resp.data.length; i++) {
                 searchTrack = resp.data[i];
                 searchPlayList.appendSong(searchTrack);
             }
@@ -135,6 +148,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public void recyclerClick(int index, Data track) {
         NowPlayingList.playList = searchPlayList;
         NowPlayingList.index = index;
+
         Intent activityIntent = new Intent(this, MusicActivity.class);
         activityIntent.putExtra("Data", track);
         startActivityForResult(activityIntent, 3);
@@ -146,29 +160,19 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         if (resultCode == RESULT_OK) {
             TextView info = findViewById(R.id.tv_searchSongName);
-            LinearLayout lInfo = findViewById(R.id.l_searchSong);
-            Button button = findViewById(R.id.sa_b_playButton);
 
-            switch (requestCode) {
-                case REQUEST_CODE_RV_CLICK:
+            assert data != null;
+            if (data.getSerializableExtra("Data") != null) {
 
-
-                    if (data.getSerializableExtra("Data") == null || data==null) {
-                        return;
-                    } else {
-
-                        lInfo.setVisibility(View.VISIBLE);
-                        button.setVisibility(View.VISIBLE);
-                        songInfo = (Data) data.getSerializableExtra("Data");
-                        info.setText(songInfo.getTitle_short());
-                        info = findViewById(R.id.tv_searchArtistName);
-                        info.setText(songInfo.getArtist());
-                    }
-
-                    break;
-                default:
-                    break;
+                thisSongLink.setVisibility(View.VISIBLE);
+                playButton.setVisibility(View.VISIBLE);
+                songInfo = (Data) data.getSerializableExtra("Data");
+                info.setText(songInfo.getTitle_short());
+                info = findViewById(R.id.tv_searchArtistName);
+                info.setText(songInfo.getArtist());
             }
+
+
         }
     }
 }

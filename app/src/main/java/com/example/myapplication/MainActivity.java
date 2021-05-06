@@ -5,6 +5,7 @@ import android.media.MediaPlayer;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Thread thread = null;
     Data songInfo;
-    Button search, play;
+    ImageButton search, playButton;
     LinearLayout thisSongLink;
     RecyclerView musicList;
     MusicAdapter musicAdapter;
@@ -50,8 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         thisSongLink = findViewById(R.id.l_song);
         search = findViewById(R.id.b_searchButton);
-        play = findViewById(R.id.b_playButton);
-        play.setOnClickListener(this);
+        playButton = findViewById(R.id.b_playButton);
+        playButton.setOnClickListener(this);
         search.setOnClickListener(this);
         thisSongLink.setOnClickListener(this);
 
@@ -123,10 +124,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.b_playButton:
-                if(Player.player.isPlaying())
+                if(Player.player.isPlaying()) {
                     Player.player.pause();
-                else
+                    playButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                }else {
                     Player.player.start();
+                    playButton.setImageResource(R.drawable.ic_baseline_pause_24);
+                }
                 break;
 
             case R.id.b_searchButton:
@@ -143,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void recyclerClick(int index, Data track) {
         LinearLayout thisSongLink = findViewById(R.id.l_song);
         thisSongLink.setClickable(true);
-        Button button = findViewById(R.id.b_playButton);
+        ImageButton button = findViewById(R.id.b_playButton);
         button.setClickable(true);
 
         NowPlayingList.playList = FavouriteTracks.tracks.reverse();
@@ -160,36 +164,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (resultCode == RESULT_OK) {
             TextView info = findViewById(R.id.tv_songName);
             LinearLayout lInfo = findViewById(R.id.l_song);
-            Button button = findViewById(R.id.b_playButton);
-            switch(requestCode) {
+            ImageButton button = findViewById(R.id.b_playButton);
 
-                case REQUEST_CODE_RV_CLICK:
+            assert data != null;
+            if (!(data.getSerializableExtra("Data") == null)) {
+                if(Player.player.isPlaying()) {
+                    playButton.setImageResource(R.drawable.ic_baseline_pause_24);
+                }else {
+                    playButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                }
 
-                    if (data.getSerializableExtra("Data") == null || data==null) {
-                        return;
-                    } else {
-                        button.setVisibility(View.VISIBLE);
-                        lInfo.setVisibility(View.VISIBLE);
-                        songInfo = (Data) data.getSerializableExtra("Data");
-                        info.setText(songInfo.getTitle_short());
-                        info = findViewById(R.id.tv_artistName);
-                        info.setText(songInfo.getArtist());
-                    }
-                    break;
-
-                case REQUEST_CODE_SEARCH:
-                    if (data.getSerializableExtra("Data") == null || data==null) {
-                        return;
-                    } else {
-                        button.setVisibility(View.VISIBLE);
-                        lInfo.setVisibility(View.VISIBLE);
-                        info = findViewById(R.id.tv_songName);
-                        songInfo = (Data) data.getSerializableExtra("Data");
-                        info.setText(songInfo.getTitle_short());
-                        info = findViewById(R.id.tv_artistName);info.setText(songInfo.getArtist());
-                    }
-
-                    break;
+                button.setVisibility(View.VISIBLE);
+                lInfo.setVisibility(View.VISIBLE);
+                songInfo = (Data) data.getSerializableExtra("Data");
+                info.setText(songInfo.getTitle_short());
+                info = findViewById(R.id.tv_artistName);
+                info.setText(songInfo.getArtist());
             }
         }
     }

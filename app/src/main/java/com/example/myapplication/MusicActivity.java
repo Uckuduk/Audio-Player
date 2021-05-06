@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,7 +27,6 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
     private MediaPlayer player;
     private String lastSong = null;
     private ImageButton playButton, favouriteButton, nextButton, previousButton;
-    private Boolean favourite = null;
 
 
     @Override
@@ -57,9 +58,9 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
 
             track = (Data) intent.getSerializableExtra("Data");
 
-            setInfo();
-
             play();
+
+            setInfo();
 
         } else {
             track = null;
@@ -97,6 +98,19 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
         info = findViewById(R.id.tv_music_Artist);
         info.setText(track.getArtist());
 
+        if(Player.player.isPlaying()) {
+            playButton.setImageResource(R.drawable.ic_baseline_pause_24);
+        }else{
+            playButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+        }
+
+        if(track.isFavourite()){
+            favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_green_24);
+        }
+        else{
+            favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_24);
+        }
+
         String str = track.getPicture();
         Uri uri = Uri.parse(str);
         image = findViewById(R.id.im_songImage);
@@ -112,7 +126,9 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
         Player.player = new MediaPlayer();
         Player.createPlayer();
         Player.startStreaming(getApplicationContext(), track.getPreview());
-        Player.player.start();}
+        Player.player.start();
+        Player.check();
+    }
 
     @Override
     public void onBackPressed() {
@@ -129,22 +145,26 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v){
         switch (v.getId()) {
             case R.id.ma_b_play_pause:
-                if(Player.player.isPlaying())
+                if(Player.player.isPlaying()) {
                     Player.player.pause();
-                else
+                    playButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                }else{
                     Player.player.start();
+                    playButton.setImageResource(R.drawable.ic_baseline_pause_24);
+                }
                 break;
 
             case R.id.ma_b_favourite:
                 if(!track.isFavourite()){
                     track.setFavourite(true);
                     FavouriteTracks.addFavourite(track);
-
+                    favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_green_24);
                 }
                 else {
                     if(FavouriteTracks.favouriteIds.contains(track.getId())){
                         track.setFavourite(false);
                         FavouriteTracks.deleteFavourite(track);
+                        favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_24);
                     }
                 }
 
@@ -162,9 +182,8 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
                         track = NowPlayingList.playList.get(NowPlayingList.index);
                     }
 
-                    setInfo();
                     play();
-
+                    setInfo();
                 }
                 break;
             case R.id.ma_b_previous:
@@ -177,8 +196,9 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
                         track = NowPlayingList.playList.get(NowPlayingList.index);
                     }
 
-                    setInfo();
                     play();
+                    setInfo();
+
                 }
                 break;
 

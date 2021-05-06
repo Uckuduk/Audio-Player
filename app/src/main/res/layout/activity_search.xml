@@ -16,7 +16,7 @@
             android:id="@+id/rv_searchSongs"
             android:layout_marginTop="70dp"
             android:layout_width="match_parent"
-            android:layout_height="528dp">
+            android:layout_height="480dp">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -49,7 +49,7 @@
 
     </LinearLayout>
 
-    <Button
+    <ImageButton
             android:id="@+id/sa_b_playButton"
             android:visibility="invisible"
             android:layout_width="wrap_content"
@@ -57,16 +57,15 @@
             android:layout_gravity="bottom"
             android:layout_marginBottom="72dp"
             android:clickable="true"
-            android:text="@string/bt_play"/>
+            android:src="@drawable/ic_baseline_pause_24"/>
 
-    <Button
+    <ImageButton
             android:id="@+id/sa_b_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="10dp"
-
-            android:text="@string/b_search_text"/>
+            android:src="@drawable/ic_baseline_search_24"/>
 
 
 </FrameLayout>
