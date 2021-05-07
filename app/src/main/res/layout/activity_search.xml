@@ -32,7 +32,7 @@
             android:clickable="true">
 
         <TextView
-                android:id="@+id/tv_searchArtistName"
+                android:id="@+id/tv_searchSongName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|start"
@@ -40,7 +40,7 @@
                 android:textSize="20sp"/>
 
         <TextView
-                android:id="@+id/tv_searchSongName"
+                android:id="@+id/tv_searchArtistName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|start"
@@ -55,7 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_marginBottom="72dp"
+            android:layout_marginBottom="65dp"
             android:clickable="true"
             android:src="@drawable/ic_baseline_pause_24"/>
 
