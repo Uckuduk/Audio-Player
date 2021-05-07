@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.view.View;
 import android.widget.*;
 import androidx.annotation.Nullable;
@@ -17,7 +18,7 @@ import java.io.IOException;
 import static NetworkUtils.NetworkUtils.generateSearchURL;
 import static NetworkUtils.NetworkUtils.getResponseFromURL;
 
-public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
+public class SearchActivity extends AppCompatActivity implements View.OnClickListener, MediaPlayer.OnCompletionListener {
     Thread thread = null;
     private Data songInfo = null;
     private EditText searchField;
@@ -26,6 +27,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private SearchMusicAdapter searchMusicAdapter;
     private ImageButton playButton, searchButton;
     private LinearLayout thisSongLink;
+    private boolean active = false;
 
 
     @Override
@@ -40,10 +42,48 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         searchButton = findViewById(R.id.sa_b_search);
         thisSongLink = findViewById(R.id.l_searchSong);
 
+        Player.player = new MediaPlayer();
+        ThisTrack.track = null;
+
         thisSongLink.setOnClickListener(this);
         searchField.setOnClickListener(this);
         searchButton.setOnClickListener(this);
         playButton.setOnClickListener(this);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Player.player.setOnCompletionListener(this);
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        if (NowPlayingList.playList.count() != 0 && active) {
+            if (NowPlayingList.thisIndex == NowPlayingList.playList.count() - 1) {
+                ThisTrack.track = NowPlayingList.playList.get(0);
+                NowPlayingList.thisIndex = 0;
+            } else {
+                NowPlayingList.thisIndex += 1;
+                ThisTrack.track = NowPlayingList.playList.get(NowPlayingList.thisIndex);
+            }
+
+            Player.player.stop();
+            Player.player = new MediaPlayer();
+            Player.createPlayer();
+            Player.startStreaming(getApplicationContext(), ThisTrack.track.getPreview());
+            Player.player.start();
+            Player.player.setOnCompletionListener(this);
+        }
+
+        active = true;
+
+        TextView info = findViewById(R.id.tv_searchSongName);
+        info.setText(ThisTrack.track.getTitle_short());
+        info = findViewById(R.id.tv_searchArtistName);
+        info.setText(ThisTrack.track.getArtist());
+
     }
 
     @Override
@@ -91,7 +131,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             case R.id.l_searchSong:
                 Intent intent = new Intent(this, MusicActivity.class);
-                intent.putExtra("Track", ThisTrack.track);
+                intent.putExtra("Data", ThisTrack.track);
                 startActivityForResult(intent, 1);
                 break;
 
@@ -147,7 +187,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     public void recyclerClick(int index, Data track) {
         NowPlayingList.playList = searchPlayList;
-        NowPlayingList.index = index;
+        NowPlayingList.thisIndex = index;
 
         Intent activityIntent = new Intent(this, MusicActivity.class);
         activityIntent.putExtra("Data", track);
@@ -176,8 +216,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 info = findViewById(R.id.tv_searchArtistName);
                 info.setText(songInfo.getArtist());
             }
-
-
         }
     }
 }

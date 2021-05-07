@@ -23,13 +23,14 @@ import entity.ThisTrack;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class MusicActivity extends AppCompatActivity implements View.OnClickListener {
+public class MusicActivity extends AppCompatActivity implements View.OnClickListener, MediaPlayer.OnCompletionListener {
     final String PATH = "FavouriteTracksID.txt";
     private Data track;
     private MediaPlayer player;
     private String lastSong = null;
     private ImageButton playButton, favouriteButton, nextButton, previousButton;
     private SeekBar seekBar;
+    private Thread thread = null;
 
 
     @Override
@@ -49,19 +50,28 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
         favouriteButton.setOnClickListener(this);
 
 
-        Intent intent = getIntent();
-
-        if(intent.hasExtra("Track")){
-            track = (Data) intent.getSerializableExtra("Track");
-            setInfo();
-        }else
-            if (intent.hasExtra("Data")) {
-
-            if(Player.player.isPlaying()){
-                Player.player.stop();
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) Player.player.seekTo(progress);
             }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        Intent intent = getIntent();
+
+        if (intent.hasExtra("Data")) {
             track = (Data) intent.getSerializableExtra("Data");
+            Data track1 = ThisTrack.track;
 
             play();
 
@@ -76,6 +86,7 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
     protected void onStop() {
         super.onStop();
     }
+
     public void saveFavouriteFile() {
 
         FileOutputStream out = null;
@@ -93,26 +104,30 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void setInfo(){
+    private void setInfo() {
         TextView info;
         ImageView image;
 
-        ThisTrack.track = track;
         info = findViewById(R.id.tv_music_Name);
         info.setText(track.getTitle_short());
         info = findViewById(R.id.tv_music_Artist);
         info.setText(track.getArtist());
 
-        if(Player.player.isPlaying()) {
+        seekBar.setProgress(Player.player.getCurrentPosition());
+        seekBar.setMax(Player.player.getDuration());
+
+        thread = new Thread(new SeekBarAct());
+        thread.start();
+
+        if (Player.player.isPlaying()) {
             playButton.setImageResource(R.drawable.ic_baseline_pause_24);
-        }else{
+        } else {
             playButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
         }
 
-        if(track.isFavourite()){
+        if (track.isFavourite()) {
             favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_green_24);
-        }
-        else{
+        } else {
             favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_24);
         }
 
@@ -126,17 +141,29 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    private void play(){
-        Player.player.stop();
-        Player.player = new MediaPlayer();
-        Player.createPlayer();
-        Player.startStreaming(getApplicationContext(), track.getPreview());
-        seekBar.setMax(Player.player.getDuration());
-        Player.player.start();}
+    private void play() {
+        if (ThisTrack.track == null) {
+            ThisTrack.track = track;
+            Player.player.stop();
+            Player.player = new MediaPlayer();
+            Player.createPlayer();
+            Player.startStreaming(getApplicationContext(), track.getPreview());
+            Player.player.start();
+
+        } else if ((track.getId() != ThisTrack.track.getId())) {
+            ThisTrack.track = track;
+            Player.player.stop();
+            Player.player = new MediaPlayer();
+            Player.createPlayer();
+            Player.startStreaming(getApplicationContext(), track.getPreview());
+            Player.player.start();
+        }
+
+        Player.player.setOnCompletionListener(this);
+    }
 
     @Override
     public void onBackPressed() {
-
         Intent intent = new Intent();
         intent.putExtra("Data", track);
 
@@ -146,27 +173,25 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public void onClick(View v){
+    public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ma_b_play_pause:
-                if(Player.player.isPlaying()) {
+                if (Player.player.isPlaying()) {
                     Player.player.pause();
                     playButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
-                }else{
+                } else {
                     Player.player.start();
                     playButton.setImageResource(R.drawable.ic_baseline_pause_24);
-                    updateSeekBar();
                 }
                 break;
 
             case R.id.ma_b_favourite:
-                if(!track.isFavourite()){
+                if (!track.isFavourite()) {
                     track.setFavourite(true);
                     FavouriteTracks.addFavourite(track);
                     favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_green_24);
-                }
-                else {
-                    if(FavouriteTracks.favouriteIds.contains(track.getId())){
+                } else {
+                    if (FavouriteTracks.favouriteIds.contains(track.getId())) {
                         track.setFavourite(false);
                         FavouriteTracks.deleteFavourite(track);
                         favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_24);
@@ -178,13 +203,13 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
                 break;
 
             case R.id.ma_b_next:
-                if(NowPlayingList.playList.count() != 0) {
-                    if (NowPlayingList.index == NowPlayingList.playList.count() - 1) {
+                if (NowPlayingList.playList.count() != 0) {
+                    if (NowPlayingList.thisIndex == NowPlayingList.playList.count() - 1) {
                         track = NowPlayingList.playList.get(0);
-                        NowPlayingList.index = 0;
+                        NowPlayingList.thisIndex = 0;
                     } else {
-                        NowPlayingList.index += 1;
-                        track = NowPlayingList.playList.get(NowPlayingList.index);
+                        NowPlayingList.thisIndex += 1;
+                        track = NowPlayingList.playList.get(NowPlayingList.thisIndex);
                     }
 
                     play();
@@ -192,13 +217,13 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
                 }
                 break;
             case R.id.ma_b_previous:
-                if(NowPlayingList.playList.count() != 0) {
-                    if (NowPlayingList.index == 0) {
-                        NowPlayingList.index = NowPlayingList.playList.count() - 1;
-                        track = NowPlayingList.playList.get(NowPlayingList.index);
+                if (NowPlayingList.playList.count() != 0) {
+                    if (NowPlayingList.thisIndex == 0) {
+                        NowPlayingList.thisIndex = NowPlayingList.playList.count() - 1;
+                        track = NowPlayingList.playList.get(NowPlayingList.thisIndex);
                     } else {
-                        NowPlayingList.index -= 1;
-                        track = NowPlayingList.playList.get(NowPlayingList.index);
+                        NowPlayingList.thisIndex -= 1;
+                        track = NowPlayingList.playList.get(NowPlayingList.thisIndex);
                     }
 
                     play();
@@ -209,6 +234,44 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
 
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        if (NowPlayingList.playList.count() != 0) {
+            if (NowPlayingList.thisIndex == NowPlayingList.playList.count() - 1) {
+                track = NowPlayingList.playList.get(0);
+                NowPlayingList.thisIndex = 0;
+            } else {
+                NowPlayingList.thisIndex += 1;
+                track = NowPlayingList.playList.get(NowPlayingList.thisIndex);
+            }
+
+            play();
+            setInfo();
+
+        }
+    }
+
+    class SeekBarAct implements Runnable {
+
+        @Override
+        public void run() {
+            int currentPosition = 0;
+            int total = Player.player.getDuration();
+
+            while (Player.player != null && currentPosition < total) {
+                try {
+                    Thread.sleep(1000);
+                    currentPosition = Player.player.getCurrentPosition();
+                } catch (InterruptedException e) {
+                    return;
+                } catch (Exception e) {
+                    return;
+                }
+                seekBar.setProgress(currentPosition);
+            }
         }
     }
 }

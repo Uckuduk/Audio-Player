@@ -23,17 +23,19 @@ import java.util.ArrayList;
 import static NetworkUtils.NetworkUtils.*;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, MediaPlayer.OnCompletionListener {
     final String PATH = "FavouriteTracksID.txt";
     final int REQUEST_CODE_RV_CLICK = 1;
     final int REQUEST_CODE_SEARCH = 2;
+    static boolean active = false;
 
-    Thread thread = null;
-    Data songInfo;
-    ImageButton search, playButton;
-    LinearLayout thisSongLink;
-    RecyclerView musicList;
-    MusicAdapter musicAdapter;
+
+    private Thread thread = null;
+    private Data songInfo;
+    private ImageButton search, playButton;
+    private LinearLayout thisSongLink;
+    private RecyclerView musicList;
+    private MusicAdapter musicAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         readFavouriteFile();
 
         Player.player = new MediaPlayer();
+        ThisTrack.track = null;
 
         musicList = findViewById(R.id.rv_mySongs);
 
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         playButton.setOnClickListener(this);
         search.setOnClickListener(this);
         thisSongLink.setOnClickListener(this);
+
     }
 
     @Override
@@ -71,12 +75,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         musicList.getRecycledViewPool().clear();
-
         thread = new Thread(new DeezerFavouriteQuery());
         thread.start();
+        Player.player.setOnCompletionListener(this);
     }
 
-    public void readFavouriteFile(){
+    public void readFavouriteFile() {
 
         FileInputStream in = null;
 
@@ -88,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String text = new String(bytes);
             String[] IDs = text.split("\n");
 
-            for (String id: IDs) {
+            for (String id : IDs) {
                 try {
                     FavouriteTracks.favouriteIds.add(Integer.parseInt(id));
 
@@ -117,15 +121,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.l_song:
                 Intent intent = new Intent(this, MusicActivity.class);
-                intent.putExtra("Track", ThisTrack.track);
+                intent.putExtra("Data", ThisTrack.track);
                 startActivityForResult(intent, REQUEST_CODE_RV_CLICK);
                 break;
 
             case R.id.b_playButton:
-                if(Player.player.isPlaying()) {
+                if (Player.player.isPlaying()) {
                     Player.player.pause();
                     playButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
-                }else {
+                } else {
                     Player.player.start();
                     playButton.setImageResource(R.drawable.ic_baseline_pause_24);
                 }
@@ -149,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button.setClickable(true);
 
         NowPlayingList.playList = FavouriteTracks.tracks.reverse();
-        NowPlayingList.index = index;
+        NowPlayingList.thisIndex = index;
         Intent activityIntent = new Intent(this, MusicActivity.class);
         activityIntent.putExtra("Data", track);
         startActivityForResult(activityIntent, REQUEST_CODE_RV_CLICK);
@@ -163,23 +167,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             TextView info = findViewById(R.id.tv_songName);
             LinearLayout lInfo = findViewById(R.id.l_song);
             ImageButton button = findViewById(R.id.b_playButton);
-
             assert data != null;
             if (!(data.getSerializableExtra("Data") == null)) {
-                if(Player.player.isPlaying()) {
+                if (Player.player.isPlaying()) {
                     playButton.setImageResource(R.drawable.ic_baseline_pause_24);
-                }else {
+                } else {
                     playButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
                 }
 
                 button.setVisibility(View.VISIBLE);
                 lInfo.setVisibility(View.VISIBLE);
+
                 songInfo = (Data) data.getSerializableExtra("Data");
                 info.setText(songInfo.getTitle_short());
                 info = findViewById(R.id.tv_artistName);
                 info.setText(songInfo.getArtist());
             }
         }
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        if (NowPlayingList.thisIndex + 1 == NowPlayingList.nextIndex) {
+            if (NowPlayingList.playList.count() != 0 && active) {
+                if (NowPlayingList.thisIndex == NowPlayingList.playList.count() - 1) {
+                    ThisTrack.track = NowPlayingList.playList.get(0);
+                    NowPlayingList.thisIndex = 0;
+                    NowPlayingList.nextIndex = 1;
+                } else {
+                    NowPlayingList.thisIndex += 1;
+                    ThisTrack.track = NowPlayingList.playList.get(NowPlayingList.thisIndex);
+                    NowPlayingList.nextIndex += 1;
+                }
+
+                Player.player.stop();
+                Player.player = new MediaPlayer();
+                Player.createPlayer();
+                Player.startStreaming(getApplicationContext(), ThisTrack.track.getPreview());
+                Player.player.start();
+                Player.player.setOnCompletionListener(this);
+            }
+        }
+
+        active = true;
+
+        TextView info = findViewById(R.id.tv_songName);
+        info.setText(ThisTrack.track.getTitle_short());
+        info = findViewById(R.id.tv_artistName);
+        info.setText(ThisTrack.track.getArtist());
+
     }
 
     class DeezerFavouriteQuery implements Runnable {
@@ -194,14 +230,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             try {
                 responses = findTrackById(FavouriteTracks.favouriteIds);
-                for (URL url: responses) {
-                   String response = getResponseFromURL(url);
-                   searchTrack = gson.fromJson(response, Data.class);
-                   if(!FavouriteTracks.tracks.contains(searchTrack)) {
-                       FavouriteTracks.tracks.appendSong(searchTrack);
-                       searchTrack.setFavourite(true);
-                   }
 
+                for (URL url : responses) {
+                    String response = getResponseFromURL(url);
+                    searchTrack = gson.fromJson(response, Data.class);
+                    if (!FavouriteTracks.tracks.contains(searchTrack)) {
+                        FavouriteTracks.tracks.appendSong(searchTrack);
+                        searchTrack.setFavourite(true);
+                    }
                 }
 
             } catch (IOException e) {
