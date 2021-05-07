@@ -55,8 +55,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         playButton.setOnClickListener(this);
         search.setOnClickListener(this);
         thisSongLink.setOnClickListener(this);
-
-
     }
 
     @Override
@@ -120,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.l_song:
                 Intent intent = new Intent(this, MusicActivity.class);
                 intent.putExtra("Track", ThisTrack.track);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE_RV_CLICK);
                 break;
 
             case R.id.b_playButton:

@@ -6,9 +6,11 @@ import android.graphics.ColorFilter;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +29,7 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
     private MediaPlayer player;
     private String lastSong = null;
     private ImageButton playButton, favouriteButton, nextButton, previousButton;
+    private SeekBar seekBar;
 
 
     @Override
@@ -38,11 +41,13 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
         nextButton = findViewById(R.id.ma_b_next);
         playButton = findViewById(R.id.ma_b_play_pause);
         favouriteButton = findViewById(R.id.ma_b_favourite);
+        seekBar = findViewById(R.id.ma_seekBar);
 
         previousButton.setOnClickListener(this);
         nextButton.setOnClickListener(this);
         playButton.setOnClickListener(this);
         favouriteButton.setOnClickListener(this);
+
 
         Intent intent = getIntent();
 
@@ -126,9 +131,8 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
         Player.player = new MediaPlayer();
         Player.createPlayer();
         Player.startStreaming(getApplicationContext(), track.getPreview());
-        Player.player.start();
-        Player.check();
-    }
+        seekBar.setMax(Player.player.getDuration());
+        Player.player.start();}
 
     @Override
     public void onBackPressed() {
@@ -151,6 +155,7 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
                 }else{
                     Player.player.start();
                     playButton.setImageResource(R.drawable.ic_baseline_pause_24);
+                    updateSeekBar();
                 }
                 break;
 

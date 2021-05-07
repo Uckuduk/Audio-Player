@@ -92,7 +92,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.l_searchSong:
                 Intent intent = new Intent(this, MusicActivity.class);
                 intent.putExtra("Track", ThisTrack.track);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 break;
 
             case R.id.et_searchLine:
@@ -163,6 +163,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             assert data != null;
             if (data.getSerializableExtra("Data") != null) {
+                if(Player.player.isPlaying()) {
+                    playButton.setImageResource(R.drawable.ic_baseline_pause_24);
+                }else {
+                    playButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                }
 
                 thisSongLink.setVisibility(View.VISIBLE);
                 playButton.setVisibility(View.VISIBLE);
