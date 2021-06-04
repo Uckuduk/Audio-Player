@@ -2,10 +2,8 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.media.AudioAttributes;
-import android.media.AudioFocusRequest;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import entity.NowPlayingList;
 
 import java.io.IOException;
 

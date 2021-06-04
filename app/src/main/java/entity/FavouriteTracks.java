@@ -1,7 +1,5 @@
 package entity;
 
-import com.example.myapplication.MainActivity;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -26,6 +24,4 @@ public class FavouriteTracks {
 
         tracks.deleteSong(track);
     }
-
-
 }

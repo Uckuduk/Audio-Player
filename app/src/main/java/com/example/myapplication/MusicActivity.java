@@ -1,25 +1,17 @@
 package com.example.myapplication;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
-import entity.Data;
-import entity.FavouriteTracks;
-import entity.NowPlayingList;
-import entity.ThisTrack;
-
+import entity.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -31,7 +23,6 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
     private ImageButton playButton, favouriteButton, nextButton, previousButton;
     private SeekBar seekBar;
     private Thread thread = null;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +62,6 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
 
         if (intent.hasExtra("Data")) {
             track = (Data) intent.getSerializableExtra("Data");
-            Data track1 = ThisTrack.track;
 
             play();
 
@@ -125,7 +115,7 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
             playButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
         }
 
-        if (track.isFavourite()) {
+        if (FavouriteTracks.favouriteIds.contains(track.getId())) {
             favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_green_24);
         } else {
             favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_24);
@@ -186,15 +176,16 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
                 break;
 
             case R.id.ma_b_favourite:
-                if (!track.isFavourite()) {
+                if (!FavouriteTracks.favouriteIds.contains(track.getId())) {
                     track.setFavourite(true);
                     FavouriteTracks.addFavourite(track);
                     favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_green_24);
                 } else {
-                    if (FavouriteTracks.favouriteIds.contains(track.getId())) {
+                    if (FavouriteTracks.favouriteIds.contains(track.getId())){
                         track.setFavourite(false);
                         FavouriteTracks.deleteFavourite(track);
                         favouriteButton.setImageResource(R.drawable.ic_baseline_favorite_24);
+
                     }
                 }
 
@@ -239,18 +230,21 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        if (NowPlayingList.playList.count() != 0) {
-            if (NowPlayingList.thisIndex == NowPlayingList.playList.count() - 1) {
-                track = NowPlayingList.playList.get(0);
-                NowPlayingList.thisIndex = 0;
-            } else {
-                NowPlayingList.thisIndex += 1;
-                track = NowPlayingList.playList.get(NowPlayingList.thisIndex);
+        if (Player.player.getCurrentPosition() != 0) {
+
+            if (NowPlayingList.playList.count() != 0) {
+                if (NowPlayingList.thisIndex == NowPlayingList.playList.count() - 1) {
+                    track = NowPlayingList.playList.get(0);
+                    NowPlayingList.thisIndex = 0;
+                } else {
+                    NowPlayingList.thisIndex += 1;
+                    track = NowPlayingList.playList.get(NowPlayingList.thisIndex);
+                }
+
+                play();
+                setInfo();
+
             }
-
-            play();
-            setInfo();
-
         }
     }
 

@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import entity.*;
-
 import java.io.IOException;
 
 
 import static NetworkUtils.NetworkUtils.generateSearchURL;
 import static NetworkUtils.NetworkUtils.getResponseFromURL;
 
-public class SearchActivity extends AppCompatActivity implements View.OnClickListener, MediaPlayer.OnCompletionListener {
+public class SearchActivity extends AppCompatActivity implements View.OnClickListener,
+        MediaPlayer.OnCompletionListener{
     Thread thread = null;
     private Data songInfo = null;
     private EditText searchField;
@@ -42,8 +42,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         searchButton = findViewById(R.id.sa_b_search);
         thisSongLink = findViewById(R.id.l_searchSong);
 
-        Player.player = new MediaPlayer();
-        ThisTrack.track = null;
+        /*Player.player = new MediaPlayer();
+        ThisTrack.track = null;*/
 
         thisSongLink.setOnClickListener(this);
         searchField.setOnClickListener(this);
@@ -60,21 +60,24 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        if (NowPlayingList.playList.count() != 0 && active) {
-            if (NowPlayingList.thisIndex == NowPlayingList.playList.count() - 1) {
-                ThisTrack.track = NowPlayingList.playList.get(0);
-                NowPlayingList.thisIndex = 0;
-            } else {
-                NowPlayingList.thisIndex += 1;
-                ThisTrack.track = NowPlayingList.playList.get(NowPlayingList.thisIndex);
-            }
+        if (Player.player.getCurrentPosition() != 0) {
 
-            Player.player.stop();
-            Player.player = new MediaPlayer();
-            Player.createPlayer();
-            Player.startStreaming(getApplicationContext(), ThisTrack.track.getPreview());
-            Player.player.start();
-            Player.player.setOnCompletionListener(this);
+            if (NowPlayingList.playList.count() != 0 && active) {
+                if (NowPlayingList.thisIndex == NowPlayingList.playList.count() - 1) {
+                    ThisTrack.track = NowPlayingList.playList.get(0);
+                    NowPlayingList.thisIndex = 0;
+                } else {
+                    NowPlayingList.thisIndex += 1;
+                    ThisTrack.track = NowPlayingList.playList.get(NowPlayingList.thisIndex);
+                }
+
+                Player.player.stop();
+                Player.player = new MediaPlayer();
+                Player.createPlayer();
+                Player.startStreaming(getApplicationContext(), ThisTrack.track.getPreview());
+                Player.player.start();
+                Player.player.setOnCompletionListener(this);
+            }
         }
 
         active = true;
@@ -88,11 +91,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onBackPressed() {
-        if(songInfo != null && !playButton.isShown()){
+        if (songInfo != null && !playButton.isShown()) {
             playButton.setVisibility(View.VISIBLE);
             thisSongLink.setVisibility(View.VISIBLE);
 
-        }else {
+        } else {
 
             if (thread != null) {
                 thread.interrupt();
@@ -203,9 +206,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             assert data != null;
             if (data.getSerializableExtra("Data") != null) {
-                if(Player.player.isPlaying()) {
+                if (Player.player.isPlaying()) {
                     playButton.setImageResource(R.drawable.ic_baseline_pause_24);
-                }else {
+                } else {
                     playButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
                 }
 

@@ -2,9 +2,7 @@ package com.example.myapplication;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import entity.*;
-
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
@@ -59,11 +56,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         search.setOnClickListener(this);
         thisSongLink.setOnClickListener(this);
 
+        thread = new Thread(new DeezerFavouriteQuery());
+        thread.start();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        musicList.post(new Runnable() {
+            @Override
+            public void run() {
+                LinearLayoutManager layoutManager = new LinearLayoutManager(getParent());
+                musicList.setLayoutManager(layoutManager);
+
+                musicList.setHasFixedSize(true);
+                PlayList playList = FavouriteTracks.tracks.reverse();
+                musicAdapter = new MusicAdapter(FavouriteTracks.tracks.count(), getParent(), playList);
+                musicList.setAdapter(musicAdapter);
+            }
+        });
+        Player.player.setOnCompletionListener(this);
     }
 
     @Override
@@ -75,9 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         musicList.getRecycledViewPool().clear();
-        thread = new Thread(new DeezerFavouriteQuery());
-        thread.start();
-        Player.player.setOnCompletionListener(this);
+
     }
 
     public void readFavouriteFile() {
@@ -179,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 lInfo.setVisibility(View.VISIBLE);
 
                 songInfo = (Data) data.getSerializableExtra("Data");
+                ThisTrack.track = songInfo;
                 info.setText(songInfo.getTitle_short());
                 info = findViewById(R.id.tv_artistName);
                 info.setText(songInfo.getArtist());
@@ -188,16 +200,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        if (NowPlayingList.thisIndex + 1 == NowPlayingList.nextIndex) {
+        if(Player.player.getCurrentPosition() != 0) {
             if (NowPlayingList.playList.count() != 0 && active) {
                 if (NowPlayingList.thisIndex == NowPlayingList.playList.count() - 1) {
                     ThisTrack.track = NowPlayingList.playList.get(0);
                     NowPlayingList.thisIndex = 0;
-                    NowPlayingList.nextIndex = 1;
                 } else {
                     NowPlayingList.thisIndex += 1;
                     ThisTrack.track = NowPlayingList.playList.get(NowPlayingList.thisIndex);
-                    NowPlayingList.nextIndex += 1;
                 }
 
                 Player.player.stop();
@@ -256,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     musicList.setAdapter(musicAdapter);
                 }
             });
+
         }
     }
 }

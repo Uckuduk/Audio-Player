@@ -1,9 +1,5 @@
 package entity;
 
-import android.graphics.Bitmap;
-import android.media.Image;
-import android.widget.ImageView;
-
 import java.io.Serializable;
 
 public class Album implements Serializable {
